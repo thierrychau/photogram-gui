@@ -8,17 +8,40 @@ class UsersController < ApplicationController
 
   def show
     the_username = params.fetch("path_username")
-    @the_user = User.where({ :username => the_username })
+    matching_usernames = User.where({ :username => the_username }).first
   
-    render({ :template => "user_templates/show" })
+    if matching_usernames == nil
+      redirect_to("/404")
+    else
+      @the_user =  matching_usernames
+      render({ :template => "user_templates/show" })
+    end
   end
 
   def create
-    # the_user = params.fetch("path_id")
+    new_user = User.new
+    new_user.username = params.fetch("input_username")
     
-    # if the_user.valid?
-    #   redirect_to("/users/#{the_user.id}", { :notice => "User created successfully."})
-    # else
-    #   redirect_to("/users", { :notice => "User failed to create successfully."})
+    if new_user.valid?
+      new_user.save
+      redirect_to("/users/#{new_user.username}", { :notice => "User created successfully."})
+    else
+      redirect_to("/users", { :notice => "User failed to create successfully."})
+    end
+  end
+
+  def update
+    the_user_id = params.fetch("path_id")
+    matching_users = User.where({ :id => the_user_id })
+    the_user = matching_users.first
+    
+    the_user.username = params.fetch("input_username")
+    
+    if the_user.valid?
+      the_user.save
+      redirect_to("/users/#{the_user.username}", { :notice => "User created successfully."})
+    else
+      redirect_to("/users", { :notice => "User failed to create successfully."})
+    end
   end
 end
