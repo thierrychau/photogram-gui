@@ -18,6 +18,22 @@ class PhotosController < ApplicationController
     end
   end
 
+  def create
+    new_photo = Photo.new
+
+    new_photo.image = params.fetch("input_image")
+    new_photo.caption = params.fetch("input_caption")
+    new_photo.owner_id = params.fetch("input_owner_id")
+
+    if new_photo.valid?
+      new_photo.save
+      redirect_to("/photos/#{new_photo.id}")
+    else
+      redirect_to("/photos")
+    end
+  end
+
+
   def update
     photo_id = params.fetch("path_id")
     matching_photos = Photo.where({ :id => photo_id })
